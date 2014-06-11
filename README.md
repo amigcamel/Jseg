@@ -14,7 +14,6 @@
 <h3>Usage</h3>
 ```
 from Jseg import jieba
-
 ```
 Here's a sample text:
 ```
