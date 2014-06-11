@@ -1,0 +1,300 @@
+A Chinese part-of-speech tagger trained on the sinica_treebank corpus
+
+Author: Jacob Perkins <japerk@gmail.com>
+		http://streamhacker.com
+		http://text-processing.com
+
+
+LICENSE
+=======
+
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/2.5/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
+
+		
+Installing NLTK
+===============
+
+This tagger requires NLTK to be installed, and NLTK requires PyYAML. As of 2011-07-23, the latest version of NLTK is 2.0.1rc1, and the latest version of PyYAML is 3.10. These packages are listed in requirements.txt, and can be installed using pip:
+
+	$ pip install -r requirements.txt
+
+You can also go to http://www.nltk.org/download for alternative download instructions.
+
+
+Loading the Tagger
+==================
+
+The tagger is a pickle file that can be loaded with the pickle (or cPickle) module:
+
+	>>> import pickle
+	>>> tagger = pickle.load(open("/path/to/sinica_treebank_brill_aubt.pickle"))
+
+Or you can copy the tagger to a nltk_data, directory, as in:
+
+	$ mkdir -p ~/nltk_data/taggers
+	$ cp sinica_treebank_brill_aubt.pickle ~/nltk_data/taggers/
+
+And then you can use nltk.data.load():
+
+	>>> import nltk.data
+	>>> tagger = nltk.data.load("taggers/sinica_treebank_brill_aubt.pickle")
+
+
+Using the Tagger
+================
+
+Part-of-speech taggers provide a tag() method that takes a list of words (from a tokenized sentence) and returns a lists of tagged words:
+
+	>>> tagger.tag(['\xe6\x88\x91\xe5\x80\x91', '\xe6\x98\xaf', '\xe9\x84\xb0\xe5\xb1\x85'])
+	[('\xe6\x88\x91\xe5\x80\x91', 'Nhaa'), ('\xe6\x98\xaf', 'V_11'), ('\xe9\x84\xb0\xe5\xb1\x85', 'Nab')]
+
+To tag a sentence string, you must first tokenize it:
+
+	>>> from nltk.tokenize import word_tokenize
+	>>> words = word_tokenize("\xe6\x88\x91\xe5\x80\x91 \xe6\x98\xaf \xe9\x84\xb0\xe5\xb1\x85")
+	>>> tagger.tag(words)
+	[('\xe6\x88\x91\xe5\x80\x91', 'Nhaa'), ('\xe6\x98\xaf', 'V_11'), ('\xe9\x84\xb0\xe5\xb1\x85', 'Nab')]
+
+
+About the Tagger
+================
+
+This tagger is an instance of nltk.tag.brill.BrillTagger and was trained on the 9999 sentences in the sinica_treebank corpus that comes with NLTK. Internally, the tagger is composed of a sequential backoff chain of TrigramTagger, BigramTagger, UnigramTagger, a -3 AffixTagger, and a DefaultTagger with a default tag of "-NONE-". Documentation on the tags can be found at http://www.sinica.edu.tw/SinicaCorpus/modern_e_wordtype.html while Sinica Treebank corpus coverage metrics are show below:
+
+	Accuracy: 0.982909
+	
+		 Tag          Found      Actual      Precision      Recall  
+	==============  =========  ==========  =============  ==========
+	A                     515         506  0.99074074074  1.0       
+	Caa                  2947        2914  1.0            1.0       
+	Caa[P1]                29          44  1.0            1.0       
+	Caa[P1}                 1           1  1.0            1.0       
+	Caa[P2]                39          41  1.0            1.0       
+	Caa[P2}                 1           1  1.0            1.0       
+	Cab                   240         239  1.0            1.0       
+	Cbaa                  366         373  1.0            0.96296296296
+	Cbab                    5           5  1.0            1.0       
+	Cbba                  135         130  1.0            1.0       
+	Cbbb                   58          53  1.0            0.78571428571
+	Cbca                  700         700  1.0            0.96551724137
+	Cbcb                  146         158  1.0            0.66666666666
+	DE                   7196        7095  0.83333333333  1.0       
+	DM                   2774        2771  1.0            0.99903006789
+	Daa                   276         285  1.0            0.88888888888
+	Dab                   670         670  1.0            0.95833333333
+	Dbaa                  768         838  0.97674418604  0.95454545454
+	Dbab                 1483        1441  1.0            0.92307692307
+	Dbb                  1568        1606  0.98863636363  0.98863636363
+	Dbc                     7           7  1.0            1.0       
+	Dc                    682         674  1.0            1.0       
+	Dd                   2596        2532  1.0            0.97409326424
+	Dfa                   964         948  1.0            0.97916666666
+	Dfb                    20          20  1.0            1.0       
+	Dg                     33          33  1.0            1.0       
+	Dh                    472         478  1.0            0.99401197604
+	Di                   1384        1350  0.85714285714  0.92307692307
+	Dj                    135         134  1.0            1.0       
+	Dk                     49          59  1.0            0.94736842105
+	Head                    2           2  1.0            1.0       
+	I                       9           9  1.0            1.0       
+	Naa                   846         836  1.0            1.0       
+	Nab                  9524        9520  1.0            0.9996582365
+	Nab[+SPO]               3           3  1.0            1.0       
+	Nac                  4487        4478  1.0            0.99636032757
+	Nac[+SPO]               2           2  1.0            1.0       
+	Nad                  3877        3873  1.0            0.99414348462
+	Nad[+SPO]               2           2  1.0            1.0       
+	Naea                  201         199  1.0            1.0       
+	Naeb                  782         785  1.0            0.99221789883
+	Nba                  2014        2019  1.0            0.99563699825
+	Nbc                   148         149  1.0            0.975     
+	Nca                  2458        2454  1.0            1.0       
+	Ncb                  2289        2294  1.0            0.99541284403
+	Ncc                   317         319  1.0            0.98484848484
+	Ncda                 1304        1254  1.0            1.0       
+	Ncdb                  277         279  1.0            0.98734177215
+	Nce                   110         110  1.0            1.0       
+	Ndaaa                  32          32  1.0            1.0       
+	Ndaab                  76          76  1.0            1.0       
+	Ndaac                   5           5  1.0            1.0       
+	Ndaad                  85          85  1.0            1.0       
+	Ndaba                  92          93  1.0            0.83333333333
+	Ndabb                  73          73  1.0            1.0       
+	Ndabc                 146         145  1.0            0.92592592592
+	Ndabd                 378         378  1.0            1.0       
+	Ndabe                 203         199  1.0            1.0       
+	Ndabf                  74          74  1.0            1.0       
+	Ndc                    32          32  1.0            1.0       
+	Ndda                  120         121  1.0            0.92      
+	Nddb                  100          98  1.0            1.0       
+	Nddc                  281         284  1.0            0.95555555555
+	Nep                   553         542  1.0            1.0       
+	Neqa                  896         898  1.0            1.0       
+	Neqb                    4           5  1.0            1.0       
+	Nes                   348         340  1.0            1.0       
+	Neu                   712         707  1.0            0.99333333333
+	Nfa                    16          14  1.0            1.0       
+	Nfc                     1           1  1.0            1.0       
+	Nfd                     3           2  1.0            1.0       
+	Nfg                    17          18  1.0            0.875     
+	Nfi                     1           1  1.0            1.0       
+	Ng                   1095        1139  1.0            1.0       
+	Nhaa                 2725        2728  1.0            1.0       
+	Nhab                  305         306  1.0            1.0       
+	Nhac                   64          63  1.0            1.0       
+	Nhb                    43          44  1.0            0.8       
+	Nhc                    14          16  1.0            1.0       
+	Nv1                   881         877  1.0            0.99560439560
+	Nv2                    85          84  1.0            1.0       
+	Nv3                    55          56  1.0            1.0       
+	Nv4                   901         885  1.0            0.99442379182
+	P01                     1           1  1.0            1.0       
+	P02                   213         213  1.0            1.0       
+	P03                   161         148  1.0            1.0       
+	P04                    65          67  1.0            1.0       
+	P06                   122         120  1.0            1.0       
+	P07                   342         354  0.33333333333  1.0       
+	P08                     3           2  1.0            1.0       
+	P09                     2           2  1.0            1.0       
+	P10                     0           1  None           0.0       
+	P11                   251         246  1.0            1.0       
+	P11[+part]              1           2  1.0            0.5       
+	P12                     6           6  1.0            1.0       
+	P13                    18          16  1.0            1.0       
+	P14                     3           4  1.0            1.0       
+	P15                    12          12  1.0            1.0       
+	P16                    34          34  1.0            0.66666666666
+	P17                     1           1  1.0            1.0       
+	P18                     8           8  1.0            1.0       
+	P19                   161         154  1.0            1.0       
+	P20                     9          14  1.0            1.0       
+	P20[+part]              1           2  1.0            0.5       
+	P21                  1243        1190  1.0            0.75      
+	P21[+part]              1           2  1.0            0.5       
+	P22                     3           3  1.0            1.0       
+	P23                   141         141  1.0            1.0       
+	P24                     5           7  1.0            0.66666666666
+	P25                     1           1  1.0            1.0       
+	P26                    21          21  1.0            1.0       
+	P27                    14          13  1.0            1.0       
+	P28                     2           2  1.0            1.0       
+	P29                     0           1  None           0.0       
+	P30                    21          21  1.0            1.0       
+	P31                   317         310  1.0            1.0       
+	P31[+part]             14          12  1.0            1.0       
+	P32                    37          36  1.0            1.0       
+	P32[+part]              1           2  1.0            0.5       
+	P35                   184         211  1.0            1.0       
+	P35[+part]              2           2  1.0            1.0       
+	P36                     1           1  1.0            1.0       
+	P37                    39          39  1.0            1.0       
+	P38                    14          14  1.0            1.0       
+	P39                    80          79  1.0            1.0       
+	P40                     3           3  1.0            1.0       
+	P41                    34          32  1.0            1.0       
+	P42                    27          24  1.0            1.0       
+	P43                    27          27  1.0            1.0       
+	P45                     1           1  1.0            1.0       
+	P46                     6           6  1.0            1.0       
+	P47                    43          38  1.0            1.0       
+	P48                     5           5  1.0            1.0       
+	P49                    43          43  1.0            1.0       
+	P50                    26          26  1.0            1.0       
+	P52                     2           3  1.0            0.66666666666
+	P54                    17          17  1.0            1.0       
+	P55                    69          63  1.0            1.0       
+	P55[+part]              2           2  1.0            1.0       
+	P58                    14          14  1.0            1.0       
+	P59                    34          34  1.0            1.0       
+	P60                    13          12  1.0            1.0       
+	P61                   173         177  1.0            1.0       
+	P62                   121         120  1.0            1.0       
+	P63                    68          67  0.66666666666  1.0       
+	P64                     4           4  1.0            1.0       
+	P66                     1           1  1.0            1.0       
+	Str                     0           3  None           0.0       
+	Ta                    515         662  1.0            1.0       
+	Tb                     27          28  1.0            1.0       
+	Tc                    229         229  1.0            1.0       
+	Td                     64          67  1.0            0.875     
+	VA                      2           2  1.0            1.0       
+	VA11                  503         511  0.99473684210  1.0       
+	VA11[+ASP]              3           3  1.0            1.0       
+	VA11[+NEG]              1           1  1.0            1.0       
+	VA12                  199         199  1.0            0.98360655737
+	VA13                  122         124  1.0            1.0       
+	VA2                    47          47  1.0            1.0       
+	VA2[+SPV]               1           1  1.0            1.0       
+	VA3                     8          10  1.0            1.0       
+	VA3[+ASP]               1           1  1.0            1.0       
+	VA4                   954         956  1.0            0.99619771863
+	VA4[+ASP]              18          18  1.0            1.0       
+	VA4[+NEG,+ASP]          1           1  1.0            1.0       
+	VA4[+SPV]               0           2  None           0.0       
+	VB11                   93          92  1.0            1.0       
+	VB11[+ASP]              1           1  1.0            1.0       
+	VB11[+NEG]              1           1  1.0            1.0       
+	VB11[+SPV]              1           1  1.0            1.0       
+	VB12                   63          65  1.0            0.97674418604
+	VB12[+ASP]              1           1  1.0            1.0       
+	VB12[+NEG]              1           1  1.0            1.0       
+	VB2                    20          20  1.0            1.0       
+	VB2[+NEG]               1           1  1.0            1.0       
+	VC1                   797         848  0.98648648648  1.0       
+	VC2                  3309        3304  1.0            0.99663299663
+	VC2[+DE]                5           5  1.0            1.0       
+	VC2[+NEG]              13          13  1.0            1.0       
+	VC31                 1186        1188  1.0            1.0       
+	VC31[+DE]               1           1  1.0            1.0       
+	VC31[+NEG]              8           8  1.0            1.0       
+	VC31[+SPV]              1           1  1.0            1.0       
+	VC32                  181         180  1.0            1.0       
+	VC32[+SPV]              1           1  1.0            1.0       
+	VC33                  401         401  1.0            1.0       
+	VD1                   265         264  1.0            1.0       
+	VD2                    22          22  1.0            1.0       
+	VD2[+NEG]               1           1  1.0            1.0       
+	VE11                   64          64  1.0            1.0       
+	VE12                  121         121  1.0            1.0       
+	VE2                  1604        1627  0.97188755020  0.99180327868
+	VE2[+DE]                7           7  1.0            1.0       
+	VE2[+NEG]               8           8  1.0            1.0       
+	VF1                   128         130  1.0            0.96969696969
+	VF2                   222         222  1.0            0.94230769230
+	VG1                   204         202  1.0            0.98734177215
+	VG1[+NEG]               4           4  1.0            1.0       
+	VG2                   504         543  1.0            0.99019607843
+	VH11                 3685        3722  1.0            0.99583622484
+	VH11[+ASP]              7           7  1.0            1.0       
+	VH11[+DE]               1           1  1.0            1.0       
+	VH11[+NEG]              1           1  1.0            1.0       
+	VH12                  109         106  1.0            1.0       
+	VH13                  931         940  1.0            1.0       
+	VH14                  133         134  1.0            1.0       
+	VH15                   65          66  1.0            1.0       
+	VH15[+NEG]              1           1  1.0            1.0       
+	VH16                  279         280  1.0            0.98969072164
+	VH17                   52          55  1.0            0.94117647058
+	VH21                  199         199  1.0            1.0       
+	VH22                   24          24  1.0            1.0       
+	VI1                    28          28  1.0            1.0       
+	VI2                    50          50  1.0            1.0       
+	VI3                    10          11  1.0            1.0       
+	VJ1                   444         452  1.0            0.98930481283
+	VJ1[+NEG]               1           1  1.0            1.0       
+	VJ2                   159         159  1.0            1.0       
+	VJ2[+SPV]               1           1  1.0            1.0       
+	VJ3                   528         540  1.0            0.99180327868
+	VJ3[+NEG]               2           2  1.0            1.0       
+	VK1                   773         775  1.0            0.99186991869
+	VK1[+NEG]               1           1  1.0            1.0       
+	VK2                   226         227  1.0            1.0       
+	VK2[+NEG]               1           1  1.0            1.0       
+	VL1                   115         117  1.0            1.0       
+	VL2                   127         130  1.0            0.96153846153
+	VL3                     1           1  1.0            1.0       
+	VL4                   293         297  1.0            1.0       
+	V_11                 1123        1035  0.75           0.6       
+	V_12                   16          18  1.0            1.0       
+	V_2                   692         684  1.0            0.66666666666
+	==============  =========  ==========  =============  ==========
