@@ -100,6 +100,9 @@ class Jieba(Hmm):
             raw = self._ensure_unicode(raw)
             guarantee_wlst = [i for i in raw.split('\n') if i != '']
             guarantee_wlst = sorted(guarantee_wlst, key=len, reverse=True)
+            #
+            guarantee_wlst = [i for i in guarantee_wlst if re.match(ur'^[ㄅ-ㄩ\u4E00-\u9FA5]+$', i[0])] # todo:中英夾雜或英文分開處理
+            #
         for num, word in enumerate(guarantee_wlst):
             self._gw[word] = '_gw'+str(num)+'@'
             self._gwr['_gw'+str(num)+'@'] = word
@@ -252,6 +255,8 @@ class Jieba(Hmm):
                 con.append((word, 'EMOTICON'))
             elif re_url.match(blk):
                 con.append((re_url.match(blk).group(1), 'URL'))
+            # elif re_eng.match(blk):
+                # con.append((blk, 'FW'))
             elif re_han.match(blk):
                 for word in self._seg(blk):
                     con.append((word, None))
