@@ -2,6 +2,14 @@
 <h2>A modified version of <a href="https://github.com/fxsjy/jieba">Jieba</a> segmentator</h2>
 
 <h3>Synopsis</h3>
+<ul>
+  <li><strong>Equipped with Emoticon detection</strong></li>
+      <p>Emoticons will not be segmented as sequences of meaningless punctuations.</p>
+  <li><strong>Data are trained with Sinica Corpus</strong></li>
+      <p>Results are more accurate when dealing with Traditional Chinese (F1-score = 0.91).</p>
+  <li><strong>Using <a href="https://github.com/a33kuo/postagger_zh">Brill Tagger</strong></a></li>
+      <p>Training data are trained with Sinica Treebank, which raises the accuracy of POS tagging. </p>
+</ul>
 
 <h3>Usage</h3>
 ```
