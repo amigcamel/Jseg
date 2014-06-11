@@ -318,6 +318,8 @@ class Segres(object):
                     output += '%s/%s' % (word, pos)
                 elif mode == 'color':
                     output += '%s/\x1b[33m%s\x1b[0m' % (word, pos)
+                elif mode == 'html':
+                    output += '%s<span>/%s</span>' % (word, pos)
                 else:
                     raise ValueError('Mode name error: %s' % mode)
                 output += ' '
