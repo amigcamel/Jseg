@@ -265,7 +265,7 @@ class Jieba(Hmm):
                 for x in tmp:
                     if x != ' ' and x != '':
                         if re_skip.match(x):
-                                con.append((x, 'LINEBREAK'))
+                                con.append(('\n', 'LINEBREAK'))
                         else:
                             con.append((x, None))
         if POS:
