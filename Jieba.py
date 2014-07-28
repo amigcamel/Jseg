@@ -112,7 +112,7 @@ class Jieba(Hmm):
         TOTAL = 0.0
 
         for item in dic:
-            word, freq, pos = item
+            word, freq = item
             freq = float(freq)
             self._freq[word] = freq
             TOTAL += freq
@@ -351,4 +351,3 @@ if __name__ == '__main__':
 # add construction detection 
 # 標點符號分割？
 # backslash 可能有問題
-
