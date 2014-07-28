@@ -52,7 +52,6 @@ class Hmm:
 
     def hmm_seg(self, sentence):
         con = []
-        global emit_P
         prob, pos_list =  self._viterbi(sentence,('B','M','E','S'), self._prob['initP'], self._prob['tranP'], self._prob['emisP'])
         begin, next = 0,0
         for i,char in enumerate(sentence):
