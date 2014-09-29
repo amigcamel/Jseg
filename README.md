@@ -11,6 +11,16 @@
       <p>Training data are trained with Sinica Treebank, which raises the accuracy of POS tagging. </p>
 </ul>
 
+<h3>Prerequisite</h3>
+You have to install `nltk` first.
+<h4>WARNING</h4>
+Jseg currently only works well with `nltk-2.0.4`
+while the current version of `nltk` is 3.0
+What you can do is:
+```
+(sudo) pip install -I nltk==2.0.4
+```
+
 <h3>Usage</h3>
 ```
 from Jseg import jieba
