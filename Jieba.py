@@ -75,6 +75,7 @@ class Jieba(Hmm):
         self._trie = {}
         self._min_freq = None
         self._gw, self._gwr = {}, {}
+        self._gw_num = 0
 
     def _ensure_unicode(self, string):
         if not isinstance(string, unicode):
@@ -102,7 +103,25 @@ class Jieba(Hmm):
             #
             guarantee_wlst = [i for i in guarantee_wlst if re.match(ur'^[ㄅ-ㄩ\u4E00-\u9FA5]+$', i[0])] # todo:中英夾雜或英文分開處理
             #
-        for num, word in enumerate(guarantee_wlst):
+        for num, word in enumerate(guarantee_wlst, 1):
+            self._gw_num = num
+            self._gw[word] = '_gw'+str(num)+'@'
+            self._gwr['_gw'+str(num)+'@'] = word
+
+    def add_custom_dic(self, lst):
+        '''
+        Custom dictoinary should be a list of unicodes, e.g., [u'蟹老闆', u'張他口', u'愛米粒', u'劉阿吉']
+        '''
+        if not isinstance(lst, list):
+            raise TypeError('Custom dictionary should be a list of unicodes!')
+        for word in lst:
+            if not isinstance(word, unicode):
+                raise UnicodeError('%s is not a unicode; be sure every word is unicode!' % repr(word))
+        gw_num = self._gw_num
+        if gw_num == 0:
+            gw_num = 1
+        for num, word in enumerate(lst, gw_num):
+            self._gw_num = num
             self._gw[word] = '_gw'+str(num)+'@'
             self._gwr['_gw'+str(num)+'@'] = word
 
@@ -327,6 +346,13 @@ class Segres(object):
         return output
 
     def nopos(self, mode='string'):
+        '''
+        Return segmentation results without POS tags.
+        
+        mode:
+        1. string: return results with "str"
+        2. list: return results with "list"
+        '''
         output = [word for word, pos in self.raw]
         if mode == 'string':
             output = ' '.join(output)
