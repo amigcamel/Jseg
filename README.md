@@ -66,3 +66,13 @@ Amber 和 Emily 是 雙胞胎
 Yvonne 不 是 小老鼠
 期末 要 爆炸 啦 ！ ◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣ 
 ```
+If you want the result to be in a list, set ```mode``` to ```list```:
+```
+result.nopos(mode='list')
+```
+
+###Add user defined dictionary
+```
+jieba.add_custom_dic(lst)
+```
+```lst``` should be a list of unicodes, e.g., [u'蟹老闆', u'張他口', u'愛米粒', u'劉阿吉']
