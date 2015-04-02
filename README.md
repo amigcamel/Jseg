@@ -21,6 +21,19 @@ What you can do is:
 (sudo) pip install -I nltk==2.0.4
 ```
 
+If you see 
+```
+AttributeError: 'module' object has no attribute 'finders'
+```
+
+you might try to use the older version of `setuptools` to install `nltk`
+
+```
+(sudo) pip uninstall setuptools
+(sudo) pip install setuptools==9.1
+(sudo) pip install -I nltk==2.0.4
+```
+
 <h3>Usage</h3>
 ```
 from Jseg import jieba
