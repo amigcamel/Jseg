@@ -6,15 +6,14 @@ from string import punctuation
 import json
 import re
 import itertools
-
-
-# import POS tagger module
-from POSTagger import BrillTagger
+import pickle
 
 # import Emoticon Detector
-from Emodet import emodet
+from emodet import find_emo
 
 CUR_PATH = dirname(abspath(__file__))
+
+BrillTagger = pickle.load(open(join(CUR_PATH, 'sinica_treebank_brill_aubt.pickle')))
 
 
 class Hmm:
@@ -31,7 +30,7 @@ class Hmm:
         self._prob = dict()
         probs = ['initP', 'tranP', 'emisP']
         for prob in probs:
-            with open(join(CUR_PATH, 'prob', prob)) as jf:
+            with open(join(CUR_PATH, 'prob', prob+'.json')) as jf:
                 self._prob[prob] = json.load(jf)
 
     def _viterbi(self, obs, states, start_p, trans_p, emit_p):
@@ -239,7 +238,7 @@ class Jieba(Hmm):
         sentence = self._ensure_unicode(sentence)
 
         # find emoticons
-        emos = emodet.find_emo(sentence)
+        emos = find_emo(sentence)
         emocan, emocan_r = {}, {}
 
         for num, emo in enumerate(emos):
@@ -301,7 +300,7 @@ class Jieba(Hmm):
         if POS:
             con_w = [i[0].encode('utf-8') for i in con]
             con_p1 = [i[1] for i in con]
-            res = BrillTagger.tagger.tag(con_w)
+            res = BrillTagger.tag(con_w)
 
             res_con = []
             for word_fin, pos_fin in res:
