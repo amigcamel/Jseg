@@ -14,7 +14,11 @@
 <h3>Installation</h3>
 ```
 pip install git+https://github.com/amigcamel/Jseg.git
+(sudo) pip install setuptools==9.1
+(sudo) pip install -I nltk==2.0.4
+(sudo) pip install --upgrade setuptools
 ```
+
 
 <h3>Usage</h3>
 ```
