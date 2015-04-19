@@ -3,4 +3,4 @@ import pickle
 
 CURPATH = dirname(abspath(__file__))
 
-tagger = pickle.load(open(join(CURPATH, 'sinica_treebank_brill_aubt/sinica_treebank_brill_aubt.pickle')))
+tagger = pickle.load(open(join(CURPATH, 'sinica_treebank_brill_aubt.pickle')))
