@@ -11,5 +11,5 @@ distutils.core.setup(
     url='https://github.com/amigcamel/Jseg.git',
     # license='http://opensource.org/licenses/mit-license.php',
     description='A modified version of Jieba segmentator',
-    package_data={'Jseg': ['prob/*', 'dict.txt', 'emoall.txt', 'sinica_treebank_brill_aubt.pickle']}
+    package_data={'Jseg': ['prob/*', 'dict.txt', 'emoall.txt', 'sinica_treebank_brill_aubt.pickle', 'ptt_encyc.txt']}
 )
