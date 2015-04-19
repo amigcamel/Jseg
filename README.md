@@ -11,26 +11,9 @@
       <p>Training data are trained with Sinica Treebank, which raises the accuracy of POS tagging. </p>
 </ul>
 
-<h3>Prerequisite</h3>
-You have to install `nltk` first.
-<h4>WARNING</h4>
-Jseg currently only works well with `nltk-2.0.4`
-while the current version of `nltk` is 3.0
-What you can do is:
+<h3>Installation</h3>
 ```
-(sudo) pip install -I nltk==2.0.4
-```
-
-If you see 
-```
-AttributeError: 'module' object has no attribute 'finders'
-```
-
-you might try to use the older version of `setuptools` to install `nltk`
-
-```
-(sudo) pip install setuptools==9.1
-(sudo) pip install -I nltk==2.0.4
+pip install git+https://github.com/amigcamel/Jseg.git
 ```
 
 <h3>Usage</h3>
