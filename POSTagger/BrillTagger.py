@@ -1,5 +1,5 @@
-from os.path import dirname , abspath, join
-import pickle,nltk
+from os.path import dirname, abspath, join
+import pickle
 
 CURPATH = dirname(abspath(__file__))
 
