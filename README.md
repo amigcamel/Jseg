@@ -22,7 +22,8 @@
 
 <h3>Usage</h3>
 ```
-from Jseg import jieba
+from jseg.jieba import Jieba
+jieba = Jieba()
 ```
 Here's a sample text:
 ```
@@ -35,8 +36,6 @@ sample = '''台灣大學語言學研究所LOPE實驗室超強
 ```
 Segmentation
 ```
-from jseg.jieba import Jieba
-jieba = Jieba()
 result = jieba.seg(sample)
 ```
 Print out:
