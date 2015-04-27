@@ -13,7 +13,7 @@
 
 <h3>Installation</h3>
 ```
-pip install git+https://github.com/amigcamel/Jseg.git
+(sudo) pip install git+https://github.com/amigcamel/Jseg.git
 (sudo) pip install setuptools==9.1
 (sudo) pip install -I nltk==2.0.4
 (sudo) pip install --upgrade setuptools
@@ -35,6 +35,8 @@ sample = '''台灣大學語言學研究所LOPE實驗室超強
 ```
 Segmentation
 ```
+from jseg.jieba import Jieba
+jieba = Jieba()
 result = jieba.seg(sample)
 ```
 Print out:
@@ -72,6 +74,6 @@ result.nopos(mode='list')
 
 ###Add user defined dictionary
 ```
-jieba.add_custom_dic(lst)
+jieba.add_guaranteed_wordlist(lst)
 ```
 ```lst``` should be a list of unicodes, e.g., [u'蟹老闆', u'張他口', u'愛米粒', u'劉阿吉']
