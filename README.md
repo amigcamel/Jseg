@@ -40,7 +40,7 @@ result = jieba.seg(sample)
 ```
 Print out:
 ```
-print result.text()
+print result.text
 ```
 And the result:
 ```
@@ -50,13 +50,12 @@ Amber/FW 和/Caa Emily/FW 是/V_11 雙胞胎/DM
 Yvonne/FW 不/Dc 是/V_11 小老鼠/Nab 
 期末/Ng 要/Dbab 爆炸/VH11 啦/Tc ！/PUNCTUATION ◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣/EMOTICON 
 ```
-You can print out the result with colored POS tagging:
-```
-print result.text(mode='color')
-```
+~~You can print out the result with colored POS tagging:~~  
+
+
 Print out without POS tagging:
 ```
-print result.nopos()
+print result.nopos
 ```
 Result:
 ```
@@ -66,10 +65,8 @@ Amber 和 Emily 是 雙胞胎
 Yvonne 不 是 小老鼠
 期末 要 爆炸 啦 ！ ◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣ 
 ```
-If you want the result to be in a list, set ```mode``` to ```list```:
-```
-result.nopos(mode='list')
-```
+~~If you want the result to be in a list, set ```mode``` to ```list```:~~
+
 
 ###Add user defined dictionary
 ```
