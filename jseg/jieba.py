@@ -6,8 +6,9 @@ from string import punctuation
 from emodet import find_emo
 import json
 import re
-import itertools
 import pickle
+
+
 import logging
 logger = logging.getLogger(__name__)
 try:
@@ -17,7 +18,8 @@ except:
     pass
 
 CUR_PATH = dirname(abspath(__file__))
-BrillTagger = pickle.load(open(join(CUR_PATH, 'sinica_treebank_brill_aubt.pickle')))
+with open(join(CUR_PATH, 'brill_tagger.pkl'), 'rb') as f:
+    BrillTagger = pickle.load(f)
 
 
 class Hmm:
@@ -34,27 +36,27 @@ class Hmm:
         self._prob = dict()
         probs = ['initP', 'tranP', 'emisP']
         for prob in probs:
-            with open(join(CUR_PATH, 'prob', prob+'.json')) as jf:
+            with open(join(CUR_PATH, 'prob', prob + '.json')) as jf:
                 self._prob[prob] = json.load(jf)
 
     def _viterbi(self, obs, states, start_p, trans_p, emit_p):
-        V = [{}]  # tabular
+        _v = [{}]  # tabular
         path = {}
         for y in states:  # init
-            V[0][y] = start_p[y] + emit_p[y].get(obs[0], self._min_float)
+            _v[0][y] = start_p[y] + emit_p[y].get(obs[0], self._min_float)
             path[y] = [y]
         for t in range(1, len(obs)):
-            V.append({})
+            _v.append({})
             newpath = {}
             for y in states:
                 em_p = emit_p[y].get(obs[t], self._min_float)
                 (prob, state) = max(
-                    [(V[t - 1][y0] + trans_p[y0].get(y, self._min_float) + em_p, y0) for y0 in self._prev_status[y]])
-                V[t][y] = prob
+                    [(_v[t - 1][y0] + trans_p[y0].get(y, self._min_float) + em_p, y0) for y0 in self._prev_status[y]])
+                _v[t][y] = prob
                 newpath[y] = path[state] + [y]
             path = newpath
 
-        (prob, state) = max([(V[len(obs) - 1][y], y) for y in ('E', 'S')])
+        (prob, state) = max([(_v[len(obs) - 1][y], y) for y in ('E', 'S')])
 
         return (prob, path[state])
 
@@ -94,38 +96,24 @@ class Jieba(Hmm):
             logger.debug('loading ptt dictionary')
             with open(join(CUR_PATH, "ptt_encyc.txt")) as tf:
                 raw = tf.read()
-                raw = self._ensure_unicode(raw)
                 guarantee_wlst = filter(None, raw.split('\n'))
             self.add_guaranteed_wordlist(guarantee_wlst)
-
-    def _ensure_unicode(self, string):
-        if not isinstance(string, unicode):
-            try:
-                string = string.decode('utf-8')
-            except:
-                raise UnicodeError('Input should be UTF8 or UNICODE')
-        return string
 
     def _load_dic(self):
         logger.debug('loading default dictionary')
         with open(join(CUR_PATH, "dict.txt")) as tf:
             raw = tf.read()
-            raw = self._ensure_unicode(raw)
             dic = re.split('\r{0,1}\n', raw)
             dic = filter(None, dic)
             # 字典只得有中文
-            dic = [i for i in dic if re.match(ur'^[ㄅ-ㄩ\u4E00-\u9FA5]+$', i[0])]
+
         return dic
 
     def add_guaranteed_wordlist(self, lst=None):
         '''
         Custom dictoinary should be a list of unicodes, e.g., [u'蟹老闆', u'張他口', u'愛米粒', u'劉阿吉']
         '''
-        if not isinstance(lst, list):
-            raise TypeError('Custom dictionary should be a list of unicodes!')
-        for word in lst:
-            if not isinstance(word, unicode):
-                raise UnicodeError('%s is not a unicode; be sure every word is unicode!' % repr(word))
+
         gw_num = self._gw_num
         if gw_num == 0:
             gw_num = 1
@@ -136,12 +124,12 @@ class Jieba(Hmm):
 
     def _gen_trie(self):
         dic = self._load_dic()
-        TOTAL = 0.0
+        total = 0.0
         for item in dic:
             word, freq = item.split(' ')
             freq = float(freq)
             self._freq[word] = freq
-            TOTAL += freq
+            total += freq
             p = self._trie
             for char in word:
                 if char not in p:
@@ -149,9 +137,8 @@ class Jieba(Hmm):
                 p = p[char]
             p[''] = ''  # ending flag
 
-        self._freq = dict([(word, log(float(count) / TOTAL))
-                           for word, count in self._freq.iteritems()])
-        self._min_freq = min(self._freq.itervalues())
+        self._freq = dict([(w, log(float(c) / total)) for w, c in self._freq.items()])
+        self._min_freq = min(self._freq.values())
 
     def _get_dag(self, sentence):
         senlen = len(sentence)
@@ -175,7 +162,7 @@ class Jieba(Hmm):
                 p = self._trie
                 i += 1
                 j = i
-        for i in xrange(len(sentence)):
+        for i in range(len(sentence)):
             if i not in dag:
                 dag[i] = [i]
         return dag
@@ -184,7 +171,7 @@ class Jieba(Hmm):
         route = {}
         senlen = len(sentence)
         route[senlen] = (0.0, '')
-        for idx in xrange(senlen - 1, -1, -1):
+        for idx in range(senlen - 1, -1, -1):
             candidates = [(self._freq.get(
                 sentence[idx:x + 1], self._min_freq) + route[x + 1][0], x) for x in dag[idx]]
             route[idx] = max(candidates)
@@ -196,8 +183,8 @@ class Jieba(Hmm):
         dag_con = []
         x = 0
         buf = u''
-        N = len(sentence)
-        while x < N:
+        _n = len(sentence)
+        while x < _n:
             y = route[x][1] + 1
             l_word = sentence[x:y]
             if y - x == 1:
@@ -232,8 +219,7 @@ class Jieba(Hmm):
                         dag_con.append(elem)
         return dag_con
 
-    def seg(self, sentence, POS=True):
-        sentence = self._ensure_unicode(sentence)
+    def seg(self, sentence, pos=True):
 
         # find emoticons
         emos = find_emo(sentence)
@@ -243,27 +229,27 @@ class Jieba(Hmm):
             emocan[emo] = '_emo' + str(num) + '@'
             emocan_r['_emo' + str(num) + '@'] = emo
 
-        for emo in emocan.iterkeys():
+        for emo in emocan.keys():
             sentence = sentence.replace(emo, emocan[emo])
 
         # guarantee wlst
-        # for gw in self._gw.iterkeys():
+        # for gw in self._gw.keys():
         gws = self._gw.keys()
-        gws.sort(key=lambda x: len(x), reverse=True)  # 長詞優先
+        gws = sorted(gws, key=lambda x: len(x), reverse=True)  # 長詞優先
         for gw in gws:
             if gw in sentence:
                 sentence = sentence.replace(gw, self._gw[gw])
 
-        re_han = re.compile(ur"(http://.*?\s|_gw\d+?@|_emo\d+?@|[ㄅ-ㄩ\u4E00-\u9FA5]+)", re.U)
+        re_han = re.compile(r"(http://.*?\s|_gw\d+?@|_emo\d+?@|[ㄅ-ㄩ一-龥]+)", re.U)
         # re_ch = re.compile(ur"[ㄅ-ㄩ\u4E00-\u9FA5]+")
         # re_alphnumeric = re.compile(ur'([a-zA-Z0-9]+)')
-        re_eng = re.compile(ur'[a-zA-Z]+')
-        re_neu = re.compile(ur'[0-9]+')
-        re_url = re.compile(ur'(http://.*?)[\s\n\r\n]')
-        re_skip = re.compile(ur"(\r{0,1}\n|\s)", re.U)
+        re_eng = re.compile(r'[a-zA-Z]+')
+        re_neu = re.compile(r'[0-9]+')
+        re_url = re.compile(r'(http://.*?)[\s\n\r\n]')
+        re_skip = re.compile(r"(\r{0,1}\n|\s)", re.U)
 
         puns = punctuation
-        puns += ''.join([unichr(ord(i) + 65248)
+        puns += ''.join([chr(ord(i) + 65248)
                          for i in puns])  # full-width punctuations
         puns += u'、。「」…“”'  # 要在加上一些常用標點符號
         br = u'\r{0,1}\n|\s'
@@ -297,14 +283,13 @@ class Jieba(Hmm):
                             con.append(('\n', 'LINEBREAK'))
                         else:
                             con.append((x, None))
-        if POS:
-            con_w = [i[0].encode('utf-8') for i in con]
+        if pos:
+            con_w = [i[0] for i in con]
             con_p1 = [i[1] for i in con]
             res = BrillTagger.tag(con_w)
 
             res_con = []
             for word_fin, pos_fin in res:
-                word_fin = word_fin.decode('utf-8')
                 if pos_fin == '-None-':
                     if re_pun.match(word_fin):
                         pos_fin = 'PUNCTUATION'
@@ -318,7 +303,7 @@ class Jieba(Hmm):
             con_p2 = [i[1] for i in res_con]
 
             pos_con = []
-            for pos_p1, pos_p2 in itertools.izip(con_p1, con_p2):
+            for pos_p1, pos_p2 in zip(con_p1, con_p2):
                 if pos_p1 is None:
                     pos_out = pos_p2
                 else:
@@ -377,16 +362,6 @@ class Segres(object):
         else:
             raise ValueError('Mode name error: %s' % mode)
         return output
-
-
-
-
-# if __name__ == '__main__':
-#     jieba = Jieba()
-#     print 'loading default dictionary...'
-#     jieba._gen_trie()
-#     print 'loading guarantee word list...'
-#     jieba._load_guarantee_wlst()
 
 
 # TODO
