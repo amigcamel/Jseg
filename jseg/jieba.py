@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from os.path import dirname, abspath, join
 from string import punctuation
-from emodet import find_emo
 from math import log
+from .emodet import find_emo
 import pickle
 import json
 import re
