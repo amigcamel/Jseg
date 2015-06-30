@@ -1,3 +1,9 @@
+#**注意**
+## 目前Jseg 在 python2上有許多問題，暫時停止開發
+## 若有需要，請參考Python3的版本：[Jseg3](https://github.com/amigcamel/Jseg/tree/jseg3)
+
+---
+
 <h1>Jseg</h1>
 <h2>A modified version of <a href="https://github.com/fxsjy/jieba">Jieba</a> segmentator</h2>
 
