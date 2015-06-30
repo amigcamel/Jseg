@@ -328,7 +328,7 @@ class Segres:
         return self.text
 
     def text(self):
-        if isinstance(self.raw[0], list):
+        if isinstance(self.raw[0], tuple):
             output = ''
             for word, pos in self.raw:
                 if pos != 'LINEBREAK':
@@ -343,7 +343,7 @@ class Segres:
 
     def nopos(self):
         output = self.raw
-        if isinstance(self.raw[0], list):
+        if isinstance(self.raw[0], tuple):
             output = [word for word, pos in output]
         return output
 
