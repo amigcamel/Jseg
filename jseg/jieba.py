@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import division
-from math import log
 from os.path import dirname, abspath, join
 from string import punctuation
 from emodet import find_emo
+from math import log
+import pickle
 import json
 import re
-import pickle
 
 
 import logging
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-try:
-    import coloredlogs
-    coloredlogs.install(level=logging.INFO)
-except:
-    pass
+
 
 CUR_PATH = dirname(abspath(__file__))
 with open(join(CUR_PATH, 'brill_tagger.pkl'), 'rb') as f:
@@ -219,7 +215,7 @@ class Jieba(Hmm):
                         dag_con.append(elem)
         return dag_con
 
-    def seg(self, sentence, pos=True):
+    def seg(self, sentence, pos):
 
         # find emoticons
         emos = find_emo(sentence)
@@ -283,9 +279,9 @@ class Jieba(Hmm):
                             con.append(('\n', 'LINEBREAK'))
                         else:
                             con.append((x, None))
+
+        con_w, con_p1 = zip(*con)
         if pos:
-            con_w = [i[0] for i in con]
-            con_p1 = [i[1] for i in con]
             res = BrillTagger.tag(con_w)
 
             res_con = []
@@ -316,51 +312,39 @@ class Jieba(Hmm):
                 output_mod.append((word, pos))
             output_obj = Segres(output_mod)
             return output_obj
+
         else:
-            con = [i[0] for i in con]
-            return con
+            return Segres(con_w)
 
 
-class Segres(object):
+class Segres:
 
-    def __init__(self, object):
-        self.raw = object
+    def __init__(self, output):
+        self.raw = output
         self.text = self.text()
         self.nopos = self.nopos()
 
-    def text(self, mode='plain'):
-        output = ''
-        for word, pos in self.raw:
-            if pos != 'LINEBREAK':
-                if mode == 'plain':
+    def __repr__(self):
+        return self.text
+
+    def text(self):
+        if isinstance(self.raw[0], list):
+            output = ''
+            for word, pos in self.raw:
+                if pos != 'LINEBREAK':
                     output += '%s/%s' % (word, pos)
-                elif mode == 'color':
-                    output += '%s/\x1b[33m%s\x1b[0m' % (word, pos)
-                elif mode == 'html':
-                    output += '%s<span>/%s</span>' % (word, pos)
+                    output += ' '
                 else:
-                    raise ValueError('Mode name error: %s' % mode)
-                output += ' '
-            else:
-                output += word
+                    output += word
+            output = output.strip()
+        else:
+            output = ' '.join(self.raw)
         return output
 
-    def nopos(self, mode='string'):
-        '''
-        Return segmentation results without POS tags.
-
-        mode:
-        1. string: return results with "str"
-        2. list: return results with "list"
-        '''
-        output = [word for word, pos in self.raw]
-        if mode == 'string':
-            output = ' '.join(output)
-            output = output.replace(' \n ', '\n')
-        elif mode == 'list':
-            pass
-        else:
-            raise ValueError('Mode name error: %s' % mode)
+    def nopos(self):
+        output = self.raw
+        if isinstance(self.raw[0], list):
+            output = [word for word, pos in output]
         return output
 
 
