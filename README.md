@@ -18,7 +18,7 @@ Python 3.4.3
 
 ### Installation
 
-	git clone https://github.com/amigcamel/Jseg.git
+	pip install https://github.com/amigcamel/Jseg/archive/jseg3.zip
 
 
 
