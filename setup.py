@@ -11,4 +11,12 @@ setup(
     author='Aji Liu',
     author_email='amigcamel@gmail.com',
     description='''A modified version of Jieba''',
+    package_data={
+        'jseg': [
+            'prob/*',
+            'dict.txt',
+            'emoall.txt',
+            'brill_tagger.pkl'
+        ]
+    }
 )
