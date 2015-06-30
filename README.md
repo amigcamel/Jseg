@@ -11,57 +11,35 @@
 
 3. **Using Brill Tagger**  
   Training data are trained with Sinica Treebank, which raises the accuracy of POS tagging. 
+  
+### Environment
+Python 3.4.3
+
 
 ### Installation
 
-	(sudo) pip install git+https://github.com/amigcamel/Jseg.git
+	git clone https://github.com/amigcamel/Jseg.git
 
 
 
 ###Usage
 
 	from jseg.jieba import Jieba
-	jieba = Jieba()
+	j = Jieba()
 
 Here's a sample text:
 
 
 	sample = '期末要爆炸啦！ ◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣'
 
-Segmentation
+Segmentation *with* part-of-speech
 
+	result = j.seg(sample, pos=True)
+	
+Segmentation *without* part-of-speech
 
-	result = jieba.seg(sample)
-
-Print out:
-
-	print result.text()
-
-And the result:
-
-
-	期末/Ng 要/Dbab 爆炸/VH11 啦/Tc ！/PUNCTUATION ◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣/EMOTICON 
-
-
-You can print out the result with colored POS tagging:
-
-	print result.text(mode='color')
-
-Print out without POS tagging:
-
-	print result.nopos()
-
-Result:
-
-	期末 要 爆炸 啦 ！ ◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣ 
-
-If you want the result to be in a list, set ```mode``` to ```list```:
-
-	result.nopos(mode='list')
-
+	result = j.seg(sample, pos=False)
 
 ###Add user defined dictionary
 
-	jieba.add_guaranteed_wordlist(lst)
-
-`lst` should bebe a list of unicodes, e.g., ['蟹老闆', '張他口', '劉阿吉']
+	j.add_guaranteed_wordlist(lst)
