@@ -247,10 +247,14 @@ class Jieba(Hmm):
                         dag_con.append(elem)
         return dag_con
 
-    def seg(self, sentence, pos):
-        """Segmentate words."""
+    def seg(self, text, pos=False):
+        """Segmentate words.
+
+        :param: text: text to be segmentated
+        :param: pos: show POS tagging (default: False)
+        """
         # find emoticons
-        emos = find_emo(sentence)
+        emos = find_emo(text)
         emocan, emocan_r = {}, {}
 
         for num, emo in enumerate(emos):
@@ -258,7 +262,7 @@ class Jieba(Hmm):
             emocan_r['_emo' + str(num) + '@'] = emo
 
         for emo in emocan.keys():
-            sentence = sentence.replace(emo, emocan[emo])
+            sentence = text.replace(emo, emocan[emo])
 
         # guarantee wlst
         # for gw in self._gw.keys():
@@ -286,7 +290,7 @@ class Jieba(Hmm):
         # metachr = u'^$*+?{}[]\|()'
         re_pun = re.compile(u'(%s|[%s])' % (br, puns))
 
-        blocks = re_han.split(sentence)
+        blocks = re_han.split(text)
 
         con = []
         for blk in blocks:
