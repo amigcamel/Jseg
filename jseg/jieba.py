@@ -4,6 +4,8 @@
 All credit goes to fxsjy/jieba.
 Find more on: https://github.com/fxsjy/jieba
 """
+from multiprocessing import Pool, cpu_count
+from functools import partial
 from os.path import dirname, abspath, join
 from string import punctuation
 from math import log
@@ -102,7 +104,10 @@ class Jieba(Hmm):
     """Main class."""
 
     def __init__(self, load_ptt_dict=False):
-        """__init__ method."""
+        """__init__ method.
+
+        :param: load_ptt_dict: load PTT dictionary (default: False)
+        """
         Hmm.__init__(self)
         self._freq = {}
         self._trie = {}
@@ -350,46 +355,24 @@ class Jieba(Hmm):
             output_mod = []
             for word, pos in output:
                 output_mod.append((word, pos))
-            output_obj = Segres(output_mod)
-            return output_obj
-
+            return output_mod
         else:
-            return Segres(con_w)
+            return con_w
 
+    def _seg_multi(self, texts, pos=False, pool_size=None):
+        """Use `multiprocessing` to segmentate.
 
-class Segres:
-    """Segmentation result."""
+        Notice that this is a experimental method, which seems
+        to work better with Python3.3+
+        :param: texts: list of text
+        :param: pos: show POS tags (default: False)
+        :param: pool_size: pool size of `multiprocessing`
+        """
+        import sys
+        assert (sys.version_info.major == 3 and sys.version_info.minor >= 3) 
+        with Pool(pool_size or cpu_count()) as pool:
+            output = pool.map(partial(self.seg, pos=pos), texts)
 
-    def __init__(self, output):
-        """__init__ method."""
-        self.raw = output
-        self.text = self.text()
-        self.nopos = self.nopos()
-
-    def __repr__(self):
-        """Custrom `repr`."""
-        return self.text
-
-    def text(self):
-        """Return joined text."""
-        if isinstance(self.raw[0], tuple):
-            output = ''
-            for word, pos in self.raw:
-                if pos != 'LINEBREAK':
-                    output += '%s/%s' % (word, pos)
-                    output += ' '
-                else:
-                    output += word
-            output = output.strip()
-        else:
-            output = ' '.join(self.raw)
-        return output
-
-    def nopos(self):
-        """Return results with no POS tags."""
-        output = self.raw
-        if isinstance(self.raw[0], tuple):
-            output = [word for word, pos in output]
         return output
 
 
