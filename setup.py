@@ -6,7 +6,8 @@ setup(
     version='0.0.2',
     packages=find_packages(),
     install_requires=[
-        'nltk==3.0.3'
+        'nltk==3.0.3',
+        'six==1.11.0',
     ],
     author='Aji Liu',
     author_email='amigcamel@gmail.com',
