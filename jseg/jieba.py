@@ -12,6 +12,8 @@ import json
 import re
 import logging
 
+import six
+
 from .emodet import find_emo
 
 logging.basicConfig(level=logging.DEBUG)
@@ -283,7 +285,7 @@ class Jieba(Hmm):
         re_skip = re.compile(r"(\r{0,1}\n|\s)", re.U)
 
         puns = punctuation
-        puns += ''.join([chr(ord(i) + 65248)
+        puns += ''.join([six.unichr(ord(i) + 65248)
                          for i in puns])  # full-width punctuations
         puns += u'、。「」…“”'  # 要在加上一些常用標點符號
         br = u'\r{0,1}\n|\s'
