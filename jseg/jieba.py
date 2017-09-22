@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
+"""This is a modified version of "jieba" Chinese segmentator.
+
+All credit goes to fxsjy/jieba.
+Find more on: https://github.com/fxsjy/jieba
+"""
 from os.path import dirname, abspath, join
 from string import punctuation
 from math import log
-from .emodet import find_emo
 import pickle
 import json
 import re
-
-
 import logging
+
+from .emodet import find_emo
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -19,8 +24,10 @@ with open(join(CUR_PATH, 'brill_tagger.pkl'), 'rb') as f:
 
 
 class Hmm:
+    """Hidden Markov Model."""
 
     def __init__(self):
+        """Initialize probabilities."""
         self._min_float = -3.14e100
         self._prev_status = {
             'B': ('E', 'S'),
@@ -47,7 +54,15 @@ class Hmm:
             for y in states:
                 em_p = emit_p[y].get(obs[t], self._min_float)
                 (prob, state) = max(
-                    [(_v[t - 1][y0] + trans_p[y0].get(y, self._min_float) + em_p, y0) for y0 in self._prev_status[y]])
+                    [
+                        (
+                            _v[t - 1][y0] +
+                            trans_p[y0].get(y, self._min_float) +
+                            em_p, y0
+                        )
+                        for y0 in self._prev_status[y]
+                    ]
+                )
                 _v[t][y] = prob
                 newpath[y] = path[state] + [y]
             path = newpath
@@ -57,9 +72,14 @@ class Hmm:
         return (prob, path[state])
 
     def hmm_seg(self, sentence):
+        """Segmentate with HMM method."""
         con = []
-        prob, pos_list = self._viterbi(sentence, ('B', 'M', 'E', 'S'), self._prob[
-                                       'initP'], self._prob['tranP'], self._prob['emisP'])
+        prob, pos_list = self._viterbi(
+            sentence, ('B', 'M', 'E', 'S'),
+            self._prob['initP'],
+            self._prob['tranP'],
+            self._prob['emisP']
+        )
         begin, next = 0, 0
         for i, char in enumerate(sentence):
             pos = pos_list[i]
@@ -77,8 +97,10 @@ class Hmm:
 
 
 class Jieba(Hmm):
+    """Main class."""
 
     def __init__(self, load_ptt_dict=False):
+        """__init__ method."""
         Hmm.__init__(self)
         self._freq = {}
         self._trie = {}
@@ -106,10 +128,10 @@ class Jieba(Hmm):
         return dic
 
     def add_guaranteed_wordlist(self, lst=None):
-        '''
-        Custom dictoinary should be a list of unicodes, e.g., [u'蟹老闆', u'張他口', u'愛米粒', u'劉阿吉']
-        '''
+        """User-defined dictoinary.
 
+        :param: lst: list of words.
+        """
         gw_num = self._gw_num
         if gw_num == 0:
             gw_num = 1
@@ -133,7 +155,9 @@ class Jieba(Hmm):
                 p = p[char]
             p[''] = ''  # ending flag
 
-        self._freq = dict([(w, log(float(c) / total)) for w, c in self._freq.items()])
+        self._freq = dict(
+            [(w, log(float(c) / total)) for w, c in self._freq.items()]
+        )
         self._min_freq = min(self._freq.values())
 
     def _get_dag(self, sentence):
@@ -168,8 +192,16 @@ class Jieba(Hmm):
         senlen = len(sentence)
         route[senlen] = (0.0, '')
         for idx in range(senlen - 1, -1, -1):
-            candidates = [(self._freq.get(
-                sentence[idx:x + 1], self._min_freq) + route[x + 1][0], x) for x in dag[idx]]
+            candidates = [
+                (
+                    self._freq.get(
+                        sentence[idx:x + 1], self._min_freq
+                    ) + route[x + 1][0],
+                    x
+                )
+                for x
+                in dag[idx]
+            ]
             route[idx] = max(candidates)
         return route
 
@@ -216,7 +248,7 @@ class Jieba(Hmm):
         return dag_con
 
     def seg(self, sentence, pos):
-
+        """Segmentate words."""
         # find emoticons
         emos = find_emo(sentence)
         emocan, emocan_r = {}, {}
@@ -236,7 +268,9 @@ class Jieba(Hmm):
             if gw in sentence:
                 sentence = sentence.replace(gw, self._gw[gw])
 
-        re_han = re.compile(r"(http://.*?\s|_gw\d+?@|_emo\d+?@|[ㄅ-ㄩ一-龥]+)", re.U)
+        re_han = re.compile(
+            r"(http://.*?\s|_gw\d+?@|_emo\d+?@|[ㄅ-ㄩ一-龥]+)", re.U
+        )
         # re_ch = re.compile(ur"[ㄅ-ㄩ\u4E00-\u9FA5]+")
         # re_alphnumeric = re.compile(ur'([a-zA-Z0-9]+)')
         re_eng = re.compile(r'[a-zA-Z]+')
@@ -318,16 +352,20 @@ class Jieba(Hmm):
 
 
 class Segres:
+    """Segmentation result."""
 
     def __init__(self, output):
+        """__init__ method."""
         self.raw = output
         self.text = self.text()
         self.nopos = self.nopos()
 
     def __repr__(self):
+        """Custrom `repr`."""
         return self.text
 
     def text(self):
+        """Return joined text."""
         if isinstance(self.raw[0], tuple):
             output = ''
             for word, pos in self.raw:
@@ -342,6 +380,7 @@ class Segres:
         return output
 
     def nopos(self):
+        """Return results with no POS tags."""
         output = self.raw
         if isinstance(self.raw[0], tuple):
             output = [word for word, pos in output]
