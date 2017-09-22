@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='jseg3',
+    name='jseg',
     version='0.0.2',
     packages=find_packages(),
     install_requires=[
