@@ -48,7 +48,8 @@ def craw_emo(save=True):
 
 
 def load_emo():
-    with open(join(CUR_PATH, 'emoall.txt')) as f:
+    with open(join(CUR_PATH, 'emoall.txt'), encoding="utf-8") as f:
+            "") as f:
         emos = f.read().decode('utf-8')
     emos = emos.split('\n')
     emos = [i for i in emos if i != '\n']

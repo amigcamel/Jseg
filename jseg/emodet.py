@@ -5,7 +5,7 @@ CUR_PATH = dirname(abspath(__file__))
 
 
 def load_emo():
-    with open(join(CUR_PATH, 'emoall.txt')) as f:
+    with open(join(CUR_PATH, 'emoall.txt'), encoding="utf-8") as f:
         emos = f.read()
     emos = emos.split('\n')
     emos = [i for i in emos if i != '\n']

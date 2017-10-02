@@ -119,14 +119,14 @@ class Jieba(Hmm):
 
         if load_ptt_dict:
             logger.debug('loading ptt dictionary')
-            with open(join(CUR_PATH, "ptt_encyc.txt")) as tf:
+            with open(join(CUR_PATH, "ptt_encyc.txt"), encoding="utf-8") as tf:
                 raw = tf.read()
                 guarantee_wlst = filter(None, raw.split('\n'))
             self.add_guaranteed_wordlist(guarantee_wlst)
 
     def _load_dic(self):
         logger.debug('loading default dictionary')
-        with open(join(CUR_PATH, "dict.txt")) as tf:
+        with open(join(CUR_PATH, "dict.txt"), encoding="utf-8") as tf:
             raw = tf.read()
             dic = re.split('\r{0,1}\n', raw)
             dic = filter(None, dic)
