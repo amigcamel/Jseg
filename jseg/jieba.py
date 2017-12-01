@@ -269,15 +269,15 @@ class Jieba(Hmm):
             emocan_r['_emo' + str(num) + '@'] = emo
 
         for emo in emocan.keys():
-            sentence = text.replace(emo, emocan[emo])
+            text = text.replace(emo, emocan[emo])
 
         # guarantee wlst
         # for gw in self._gw.keys():
         gws = self._gw.keys()
         gws = sorted(gws, key=lambda x: len(x), reverse=True)  # 長詞優先
         for gw in gws:
-            if gw in sentence:
-                sentence = sentence.replace(gw, self._gw[gw])
+            if gw in text:
+                text = text.replace(gw, self._gw[gw])
 
         re_han = re.compile(
             r"(http://.*?\s|_gw\d+?@|_emo\d+?@|[ㄅ-ㄩ一-龥]+)", re.U
