@@ -139,9 +139,7 @@ class Jieba(Hmm):
 
         :param: lst: list of words.
         """
-        gw_num = self._gw_num
-        if gw_num == 0:
-            gw_num = 1
+        gw_num = self._gw_num + 1
         for num, word in enumerate(lst, gw_num):
             self._gw_num = num
             self._gw[word] = '_gw' + str(num) + '@'
